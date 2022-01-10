@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2022 Zextras <https://www.zextras.com>
+
+SPDX-License-Identifier: AGPL-3.0-only
+-->
+
 <project xmlns:ivy="antlib:org.apache.ivy.ant" xmlns:antcontrib="antlib:net.sf.antcontrib" name="LdapPatch" default="generate-ldap-config">
   <dirname property="zimbra.root.dir" file="${ant.file.build-common}/../../"/>
   <property name="config.dir" location="conf" />
@@ -6,20 +12,20 @@
   <!-- properties used for generating and testing LDAP changes -->
   <property name="ldap.config.dir" location="${zimbra.root.dir}/zm-ldap-utilities/conf/ldap" />
   <property name="slapd.etc.dir" value="common/etc/openldap" />
-  <property name="zimbra.home.dir" location="/opt/zimbra" />
+  <property name="zimbra.home.dir" location="/opt/zextras" />
   
   <!-- classpath for running utilities -->
   <path id="project.class.path">
-    <fileset dir="/opt/zimbra/lib/jars" includes="zimbracommon.jar" />
-    <fileset dir="/opt/zimbra/lib/jars" includes="zimbrastore.jar" />
-    <fileset dir="/opt/zimbra/lib/jars" includes="zimbraclient.jar" />
-    <fileset dir="/opt/zimbra/lib/jars" includes="commons-cli-*.jar" />
-    <fileset dir="/opt/zimbra/lib/jars" includes="log4j-*.jar" />
-    <fileset dir="/opt/zimbra/lib/jars" includes="guava-*.jar" />
-    <fileset dir="/opt/zimbra/lib/jars" includes="httpclient-*.jar" />
-    <fileset dir="/opt/zimbra/lib/jars" includes="dom4j-*.jar" />
-    <fileset dir="/opt/zimbra/lib/jars" includes="httpcore-*.jar" />
-    <fileset dir="/opt/zimbra/lib/jars" includes="mail-*.jar" />
+    <fileset dir="/opt/zextras/lib/jars" includes="zimbracommon.jar" />
+    <fileset dir="/opt/zextras/lib/jars" includes="zimbrastore.jar" />
+    <fileset dir="/opt/zextras/lib/jars" includes="zimbraclient.jar" />
+    <fileset dir="/opt/zextras/lib/jars" includes="commons-cli-*.jar" />
+    <fileset dir="/opt/zextras/lib/jars" includes="log4j-*.jar" />
+    <fileset dir="/opt/zextras/lib/jars" includes="guava-*.jar" />
+    <fileset dir="/opt/zextras/lib/jars" includes="httpclient-*.jar" />
+    <fileset dir="/opt/zextras/lib/jars" includes="dom4j-*.jar" />
+    <fileset dir="/opt/zextras/lib/jars" includes="httpcore-*.jar" />
+    <fileset dir="/opt/zextras/lib/jars" includes="mail-*.jar" />
   </path>
   
   <target name="start-zimbra">
@@ -46,17 +52,17 @@
     </copy>
     <mkdir dir="${build.dir}/ldap-config" />
     <mkdir dir="${build.dir}/ldap-config/config" />
-    <!-- Zimbra schema for pre OpenLDAP 2.4 - uses zimbra.schema-template, should eventually retire zimbra.schema-template and only use zimbra-ocs.xml -->
+    <!-- Zimbra schema for pre OpenLDAP 2.4 - uses carbonio.schema-template, should eventually retire carbonio.schema-template and only use ocs.xml -->
     <java classname="com.zimbra.cs.account.AttributeManagerUtil" fork="true" failonerror="true">
       <sysproperty key="zimbra.version" value="${zimbra.buildinfo.all}" />
       <classpath refid="project.class.path" />
-      <arg line="-a generateLdapSchema -i ${build.dir}/attrs -t ${ldap.config.dir}/zimbra.schema-template -o ${build.dir}/ldap-config/zimbra.schema" />
+      <arg line="-a generateLdapSchema -i ${build.dir}/attrs -t ${ldap.config.dir}/carbonio.schema-template -o ${build.dir}/ldap-config/carbonio.schema" />
     </java>
-    <!-- Zimbra schema for OpenLDAP 2.4 - use zimbra-ocs.xml -->
+    <!-- Zimbra schema for OpenLDAP 2.4 - use ocs.xml -->
     <java classname="com.zimbra.cs.account.AttributeManagerUtil" fork="true" failonerror="true">
       <sysproperty key="zimbra.version" value="${zimbra.buildinfo.all}" />
       <classpath refid="project.class.path" />
-      <arg line="-a generateSchemaLdif -i ${build.dir}/attrs -o ${build.dir}/ldap-config/config/zimbra.ldif" />
+      <arg line="-a generateSchemaLdif -i ${build.dir}/attrs -o ${build.dir}/ldap-config/config/carbonio.ldif" />
     </java>
     <java classname="com.zimbra.cs.account.AttributeManagerUtil" fork="true" failonerror="true">
       <sysproperty key="zimbra.version" value="${zimbra.buildinfo.all}" />
@@ -84,10 +90,10 @@
     <copy todir="${zimbra.home.dir}/${slapd.etc.dir}/zimbra/" file="${build.dir}/ldap-config/zimbra_globalconfig.ldif" overwrite="true" />
     <copy todir="${zimbra.home.dir}/${slapd.etc.dir}/zimbra/" file="${build.dir}/ldap-config/zimbra_defaultcos.ldif" overwrite="true" />
     <copy todir="${zimbra.home.dir}/${slapd.etc.dir}/zimbra/" file="${build.dir}/ldap-config/zimbra_defaultexternalcos.ldif" overwrite="true" />
-    <copy todir="${zimbra.home.dir}/${slapd.etc.dir}/zimbra/schema/" file="${build.dir}/ldap-config/zimbra.schema" overwrite="true" />
-    <copy todir="${zimbra.home.dir}/${slapd.etc.dir}/zimbra/schema/" file="${build.dir}/ldap-config/config/zimbra.ldif" overwrite="true" />
+    <copy todir="${zimbra.home.dir}/${slapd.etc.dir}/zimbra/schema/" file="${build.dir}/ldap-config/carbonio.schema" overwrite="true" />
+    <copy todir="${zimbra.home.dir}/${slapd.etc.dir}/zimbra/schema/" file="${build.dir}/ldap-config/config/carbonio.ldif" overwrite="true" />
     <!-- apply ldap schema changes -->
-    <exec executable="/opt/zimbra/libexec/zmldapschema" />
+    <exec executable="/opt/zextras/libexec/zmldapschema" />
     <antcall target="start-zimbra"/>
   </target>
 

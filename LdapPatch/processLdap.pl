@@ -1,11 +1,15 @@
 #!/usr/bin/perl
 
+# SPDX-FileCopyrightText: 2022 Zextras <https://www.zextras.com>
+#
+# SPDX-License-Identifier: AGPL-3.0-only
+
 use strict;
 
 use Cwd;
 use Time::localtime qw(ctime);
 
-our $platform = qx(/opt/zimbra/libexec/get_plat_tag.sh);
+our $platform = qx(/opt/zextras/libexec/get_plat_tag.sh);
 chomp $platform;
 
 my $logFileName = "zmsetup.".getDateStamp().".log";
@@ -20,25 +24,25 @@ $| = 1;
 
 progress("Operations logged to $logfile\n");
 
-our $ZMPROV = "/opt/zimbra/bin/zmprov -r -m -l";
-our $SU = "su - zimbra -c ";
+our $ZMPROV = "/opt/zextras/bin/zmprov -r -m -l";
+our $SU = "su - zextras -c ";
 
 my $pwuid = getpwuid( $< );
-if ($pwuid eq "zimbra") {
+if ($pwuid eq "zextras") {
   $SU = "";
 }
 
 our %options = ();
 
-if (isInstalled("zimbra-ldap")) {
+if (isInstalled("carbonio-directory-server")) {
   installLdapSchema();
 }
 
 sub installLdapSchema {
-  main::runAsZimbra("/opt/zimbra/libexec/zmldapschema 2>/dev/null");
+  main::runAsZextras("/opt/zextras/libexec/zmldapschema 2>/dev/null");
 }
 
-my $rc = runAsZimbra ("/opt/zimbra/libexec/zmldapupdateldif");
+my $rc = runAsZextras ("/opt/zextras/libexec/zmldapupdateldif");
 
 sub isInstalled {
   my $pkg = shift;
@@ -63,14 +67,14 @@ sub isInstalled {
   return ($rc == $good);
 }
 
-sub runAsZimbra {
+sub runAsZextras {
   my $cmd = shift;
   if ($cmd =~ /ldappass/ || $cmd =~ /init/ || $cmd =~ /zmprov -r -m -l ca/) {
     # Suppress passwords in log file
     my $c = (split ' ', $cmd)[0];
-    detail ( "*** Running as zimbra user: $c\n" );
+    detail ( "*** Running as zextras user: $c\n" );
   } else {
-    detail ( "*** Running as zimbra user: $cmd\n" );
+    detail ( "*** Running as zextras user: $cmd\n" );
   }
   my $rc;
   $rc = 0xffff & system("$SU \"$cmd\" >> $logfile 2>&1");

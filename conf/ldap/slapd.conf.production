@@ -2,13 +2,13 @@
 # See slapd.conf(5) for details on configuration options.
 # This file should NOT be world readable.
 #
-#ucdata-path	"/opt/zimbra/openldap/ucdata"
-include		"/opt/zimbra/openldap/etc/openldap/schema/core.schema"
-include		"/opt/zimbra/openldap/etc/openldap/schema/cosine.schema"
-include		"/opt/zimbra/openldap/etc/openldap/schema/inetorgperson.schema"
-include		"/opt/zimbra/openldap/etc/openldap/schema/amavisd.schema"
-include		"/opt/zimbra/openldap/etc/openldap/schema/dyngroup.schema"
-include		"/opt/zimbra/openldap/etc/openldap/schema/zimbra.schema"
+#ucdata-path	"/opt/zextras/openldap/ucdata"
+include		"/opt/zextras/openldap/etc/openldap/schema/core.schema"
+include		"/opt/zextras/openldap/etc/openldap/schema/cosine.schema"
+include		"/opt/zextras/openldap/etc/openldap/schema/inetorgperson.schema"
+include		"/opt/zextras/openldap/etc/openldap/schema/amavisd.schema"
+include		"/opt/zextras/openldap/etc/openldap/schema/dyngroup.schema"
+include		"/opt/zextras/openldap/etc/openldap/schema/carbonio.schema"
 
 # Define global ACLs to disable default read access.
 
@@ -24,17 +24,17 @@ threads		8
 # of real CPUs/cores on the box (i.e., do not include Hyper-Threading values).
 tool-threads		1
 
-pidfile		"/opt/zimbra/openldap/var/run/slapd.pid"
-argsfile	"/opt/zimbra/openldap/var/run/slapd.args"
+pidfile		"/opt/zextras/openldap/var/run/slapd.pid"
+argsfile	"/opt/zextras/openldap/var/run/slapd.args"
 
-TLSCertificateFile /opt/zimbra/conf/slapd.crt
-TLSCertificateKeyFile /opt/zimbra/conf/slapd.key
+TLSCertificateFile /opt/zextras/conf/slapd.crt
+TLSCertificateKeyFile /opt/zextras/conf/slapd.key
 TLSVerifyClient never
 
 loglevel @@ldap_log_level@@
 
 # Load dynamic backend modules:
-modulepath	/opt/zimbra/openldap/sbin/openldap
+modulepath	/opt/zextras/openldap/sbin/openldap
 moduleload	back_mdb.la
 moduleload	back_monitor.la
 moduleload	syncprov.la
@@ -95,7 +95,7 @@ access to dn.children="cn=monitor"
 #######################################################################
 # accesslog database definition
 #######################################################################
-###include /opt/zimbra/conf/master-accesslog.conf
+###include /opt/zextras/conf/master-accesslog.conf
 
 #######################################################################
 # BDB database definitions
@@ -116,7 +116,7 @@ checkpoint 64 5
 # The database directory MUST exist prior to running slapd AND 
 # should only be accessible by the slapd and slap tools.
 # Mode 700 recommended.
-directory	"/opt/zimbra/data/ldap/mdb/db"
+directory	"/opt/zextras/data/ldap/mdb/db"
 # Indices to maintain
 index   objectClass                 eq
 index   zimbraForeignPrincipal      eq
@@ -215,4 +215,4 @@ access to attrs=entry
 #overlay syncprov
 #syncprov-checkpoint 20 10
 #syncprov-sessionlog 500
-###include /opt/zimbra/conf/master-accesslog-overlay.conf
+###include /opt/zextras/conf/master-accesslog-overlay.conf

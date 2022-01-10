@@ -14,8 +14,8 @@ use strict;
 # $bypass_decode_parts = 1;         # controls running of decoders&dearchivers
 
 # Mandatory Signatures
-%%uncomment VAR:zimbraDomainMandatoryMailSignatureEnabled%%$altermime='/opt/zimbra/common/bin/altermime';
-%%uncomment VAR:zimbraDomainMandatoryMailSignatureEnabled%%@altermime_args_disclaimer = qw(--verbose --disclaimer-b64=/opt/zimbra/data/altermime/_OPTION_.b64 --disclaimer=/opt/zimbra/data/altermime/_OPTION_.txt --disclaimer-html=/opt/zimbra/data/altermime/_OPTION_.html );
+%%uncomment VAR:zimbraDomainMandatoryMailSignatureEnabled%%$altermime='/opt/zextras/common/bin/altermime';
+%%uncomment VAR:zimbraDomainMandatoryMailSignatureEnabled%%@altermime_args_disclaimer = qw(--verbose --disclaimer-b64=/opt/zextras/data/altermime/_OPTION_.b64 --disclaimer=/opt/zextras/data/altermime/_OPTION_.txt --disclaimer-html=/opt/zextras/data/altermime/_OPTION_.html );
 %%uncomment VAR:zimbraDomainMandatoryMailSignatureEnabled%%$defang_maps_by_ccat{+CC_CATCHALL} = ['disclaimer'];
 %%uncomment VAR:zimbraAmavisOutboundDisclaimersOnly%%$outbound_disclaimers_only=1;
 
@@ -32,12 +32,12 @@ $default_ldap = {
 };
 
 $max_servers = %%zimbraAmavisMaxServers%%;            # num of pre-forked children (2..30 is common), -m
-$daemon_user  = 'zimbra';     # (no default;  customary: vscan or amavis), -u
-$daemon_group = 'zimbra';     # (no default;  customary: vscan or amavis), -g
+$daemon_user  = 'zextras';     # (no default;  customary: vscan or amavis), -u
+$daemon_group = 'zextras';     # (no default;  customary: vscan or amavis), -g
 
 $mydomain = '@@av_notify_domain@@';   # a convenient default for other settings
 
-$MYHOME = '/opt/zimbra/data/amavisd';   # a convenient default for other settings, -H
+$MYHOME = '/opt/zextras/data/amavisd';   # a convenient default for other settings, -H
 $TEMPBASE = "$MYHOME/tmp";   # working directory, needs to exist, -T
 $ENV{TMPDIR} = $TEMPBASE;    # environment variable TMPDIR, used by SA, etc.
 $QUARANTINEDIR = "$MYHOME/quarantine";  # -Q
@@ -50,7 +50,7 @@ $QUARANTINEDIR = "$MYHOME/quarantine";  # -Q
 # $db_home   = "$MYHOME/db";      # dir for bdb nanny/cache/snmp databases, -D
 # $helpers_home = "$MYHOME/var";  # working directory for SpamAssassin, -S
 $lock_file = "$MYHOME/var/amavisd.lock";  # -L
-$pid_file  = "/opt/zimbra/log/amavisd.pid";   # -P
+$pid_file  = "/opt/zextras/log/amavisd.pid";   # -P
 #NOTE: create directories $MYHOME/tmp, $MYHOME/var, $MYHOME/db manually
 
 $log_level = %%zimbraAmavisLogLevel%%;              # verbosity 0..5, -d
@@ -63,7 +63,7 @@ $syslog_facility = 'local0';   # Syslog facility as a string
 
 $enable_db = 0;              # enable use of BerkeleyDB/libdb (SNMP and nanny)
 $enable_zmq = 1;           # enable use of ZeroMQ (SNMP and nanny)
-@zmq_sockets = ( "ipc:///opt/zimbra/data/tmp/amavisd-zmq.sock" );
+@zmq_sockets = ( "ipc:///opt/zextras/data/tmp/amavisd-zmq.sock" );
 $nanny_details_level = 2;    # nanny verbosity: 1: traditional, 2: detailed
 $enable_dkim_verification = %%binary VAR:zimbraAmavisEnableDKIMVerification%%;  # enable DKIM signatures verification
 $enable_dkim_signing = 0;    # load DKIM signing code, keys defined by dkim_key
@@ -133,8 +133,8 @@ $policy_bank{'AM.PDP-SOCK'} = {
 
 $sa_debug = %%zimbraAmavisSALogLevel%%;
 #$sa_debug = 'info,dns,async,bayes,check,rules-all,uridnsbl,all';
-#$sa_configpath = '/opt/zimbra/conf/spamassassin';
-#$sa_siteconfigpath = '/opt/zimbra/conf/sa';
+#$sa_configpath = '/opt/zextras/conf/spamassassin';
+#$sa_siteconfigpath = '/opt/zextras/conf/sa';
 
 $sa_tag_level_deflt  = undef;  # add spam info headers if at, or above that level
 $sa_tag2_level_deflt = %%range VAR:zimbraSpamTagPercent 0 20%%;  # add 'spam detected' headers at that level
@@ -173,7 +173,7 @@ $mailfrom_to_quarantine = ''; # null return path; uses original sender if undef
 # $recipient_delimiter = '+';  # undef disables address extensions altogether
 # when enabling addr extensions do also Postfix/main.cf: recipient_delimiter=+
 
-$path = '/opt/zimbra/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/sbin:/usr/bin:/bin';
+$path = '/opt/zextras/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/sbin:/usr/bin:/bin';
 %%uncomment VAR:zimbraAmavisDSPAMEnabled%%$dspam = 'dspam';
 
 @spam_scanners = (
@@ -206,7 +206,6 @@ $myhostname = '@@zimbra_server_hostname@@';  # must be a fully-qualified domain 
 
 $notify_method  = 'smtp:[%%zimbraLocalBindAddress%%]:10025';
 $forward_method = 'smtp:[%%zimbraLocalBindAddress%%]:10025';  # set to undef with milter!
-%%uncomment SERVICE:archiving%%$archive_quarantine_method = 'smtp:[%%zimbraLocalBindAddress%%]:10025';
 
 %%uncomment VAR:zimbraAmavisQuarantineAccount%%$final_virus_destiny      = D_DISCARD;
 $final_banned_destiny     = D_BOUNCE;
@@ -235,7 +234,7 @@ $archive_quarantine_to = undef;
 #$quarantine_to_maps_by_ccat{CC_CLEAN.",3"} = ['sender-quarantine'];
 #$quarantine_to_maps_by_ccat{CC_CLEAN.",4"} = ['clean-quarantine'];
 #
-#include_config_files('/opt/zimbra/conf/amavisd-custom.conf');
+#include_config_files('/opt/zextras/conf/amavisd-custom.conf');
 # SOME OTHER VARIABLES WORTH CONSIDERING (see amavisd.conf-default for all)
 
 # $warnbadhsender,
@@ -449,7 +448,7 @@ $banned_filename_re = new_RE(
 
 # ### http://www.clamav.net/
  ['ClamAV-clamd',
-   \&ask_daemon, ["CONTSCAN {}\n", '/opt/zimbra/data/clamav/clamav.sock'],
+   \&ask_daemon, ["CONTSCAN {}\n", '/opt/zextras/data/clamav/clamav.sock'],
    qr/\bOK$/m, qr/\bFOUND$/m,
    qr/^.*?: (?!Infected Archive)(.*) FOUND$/m ],
 # # NOTE: run clamd under the same user as amavisd, or run it under its own

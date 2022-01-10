@@ -11,9 +11,6 @@ SECTION amavis
 	if SERVICE antispam
 		POSTCONF content_filter FILE zmconfigd/postfix_content_filter.cf
 	fi
-	if SERVICE archiving
-		POSTCONF content_filter FILE zmconfigd/postfix_content_filter.cf
-	fi
 	LOCAL av_notify_domain
 	LOCAL av_notify_user
 	LOCAL ldap_url
@@ -49,7 +46,6 @@ SECTION antivirus DEPENDS amavis
 	VAR zimbraClamAVListenPort
 	VAR zimbraClamAVBindAddress
 	VAR zimbraClamAVDatabaseMirror
-	VAR zimbraClamAVSafeBrowsing
 	RESTART antivirus mta
 
 SECTION antispam DEPENDS amavis
@@ -63,9 +59,6 @@ SECTION antispam DEPENDS amavis
 	LOCAL antispam_mysql_user
 	LOCAL antispam_mysql_password
 	RESTART antispam mta
-
-SECTION archiving DEPENDS amavis
-	RESTART archiving mta
 
 SECTION mta DEPENDS amavis
 	LOCAL postjournal_enabled
@@ -176,11 +169,10 @@ SECTION mta DEPENDS amavis
 	POSTCONF smtpd_tls_CAfile			VAR zimbraMtaSmtpdTlsCAfile
 	POSTCONF smtpd_tls_CApath			VAR zimbraMtaSmtpdTlsCApath
 	POSTCONF smtpd_tls_ccert_verifydepth		VAR zimbraMtaSmtpdTlsCcertVerifydepth
-	POSTCONF smtpd_tls_cert_file			/opt/zimbra/conf/smtpd.crt
+	POSTCONF smtpd_tls_cert_file			/opt/zextras/conf/smtpd.crt
 	POSTCONF smtpd_tls_ciphers			VAR zimbraMtaSmtpdTlsCiphers
-	POSTCONF smtpd_tls_dh1024_param_file		MAPLOCAL zimbraSSLDHParam
 	POSTCONF smtpd_tls_exclude_ciphers		VAR zimbraMtaSmtpdTlsExcludeCiphers
-	POSTCONF smtpd_tls_key_file			/opt/zimbra/conf/smtpd.key
+	POSTCONF smtpd_tls_key_file			/opt/zextras/conf/smtpd.key
 	POSTCONF smtpd_tls_loglevel			VAR zimbraMtaSmtpdTlsLoglevel
 	POSTCONF smtpd_tls_mandatory_ciphers		VAR zimbraMtaSmtpdTlsMandatoryCiphers
 	POSTCONF smtpd_tls_mandatory_protocols		VAR zimbraMtaSmtpdTlsMandatoryProtocols
@@ -273,6 +265,18 @@ SECTION mta DEPENDS amavis
 	POSTCONF postscreen_upstream_proxy_protocol	VAR zimbraMtaPostscreenUpstreamProxyProtocol
 	POSTCONF postscreen_watchdog_timeout	VAR zimbraMtaPostscreenWatchdogTimeout
 	POSTCONF postscreen_whitelist_interfaces	VAR zimbraMtaPostscreenWhitelistInterfaces
+	POSTCONF smtp_starttls_timeout                  LOCAL postfix_smtp_starttls_timeout
+	POSTCONF tls_random_source                      LOCAL postfix_tls_random_source
+	POSTCONF smtpd_tls_eecdh_grade                  LOCAL postfix_smtpd_tls_eecdh_grade
+	POSTCONF tls_eecdh_strong_curve                 LOCAL postfix_tls_eecdh_strong_curve
+	POSTCONF tls_eecdh_ultra_curve                  LOCAL postfix_tls_eecdh_ultra_curve
+	POSTCONF tls_preempt_cipherlist                 LOCAL postfix_tls_preempt_cipherlist
+	POSTCONF tls_high_cipherlist                    LOCAL postfix_tls_high_cipherlist
+	POSTCONF smtp_tls_exclude_ciphers               LOCAL postfix_smtp_tls_exclude_ciphers
+	POSTCONF smtp_tls_mandatory_exclude_ciphers     LOCAL postfix_smtp_tls_mandatory_exclude_ciphers
+	POSTCONF smtpd_tls_mandatory_exclude_ciphers    LOCAL postfix_smtpd_tls_mandatory_exclude_ciphers
+	POSTCONF smtpd_tls_session_cache_timeout        LOCAL postfix_smtpd_tls_session_cache_timeout
+	POSTCONF smtpd_tls_session_cache_database       LOCAL postfix_smtpd_tls_session_cache_database
 	RESTART mta
 
 SECTION opendkim DEPENDS mta
@@ -338,7 +342,7 @@ SECTION service
 
 SECTION zimbra
 	REWRITE mailboxd/etc/zimbra.web.xml.in mailboxd/webapps/zimbra/WEB-INF/web.xml
-	REWRITE mailboxd/etc/zimbra-jetty-env.xml.in mailboxd/webapps/zimbra/WEB-INF/jetty-env.xml
+	REWRITE mailboxd/etc/jetty-env.xml.in mailboxd/webapps/zimbra/WEB-INF/jetty-env.xml
 	RESTART mailboxd
 
 SECTION zimbraAdmin
@@ -491,11 +495,3 @@ SECTION cbpolicyd
 SECTION stats
 	REWRITE conf/stats.conf.in conf/stats.conf
 
-SECTION dnscache
-	REWRITE conf/unbound.conf.in conf/unbound.conf
-	VAR zimbraDNSMasterIP
-	VAR zimbraIPMode
-	VAR zimbraDNSUseTCP
-	VAR zimbraDNSUseUDP
-	VAR zimbraDNSTCPUpstream
-	RESTART dnscache

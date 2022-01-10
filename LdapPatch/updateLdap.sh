@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2022 Zextras <https://www.zextras.com>
+#
+# SPDX-License-Identifier: AGPL-3.0-only
+
 # !/bin/bash 
 
 if [ $USER != "root" ]; then
@@ -6,13 +10,13 @@ if [ $USER != "root" ]; then
 fi
 
 # set required permissions
-chown -R zimbra:zimbra ../LdapPatch
-chmod -R o+w /opt/zimbra/common/etc/openldap/schema  
-chmod o+w /opt/zimbra/conf/zimbra.ldif
-chmod +w /opt/zimbra/conf/attrs/zimbra-attrs.xml
-chmod -R o+w /opt/zimbra/common/etc/openldap/zimbra
+chown -R zextras:zextras ../LdapPatch
+chmod -R o+w /opt/zextras/common/etc/openldap/schema  
+chmod o+w /opt/zextras/conf/carbonio.ldif
+chmod +w /opt/zextras/conf/attrs/attrs.xml
+chmod -R o+w /opt/zextras/common/etc/openldap/zimbra
 
 patchDir=`pwd`
-su - zimbra -c "cd $patchDir && ant update-ldap-schema -Dzimbra.buildinfo.version=8.8.15"
-su - zimbra -c "cd $patchDir && perl processLdap.pl"
+su - zextras -c "cd $patchDir && ant update-ldap-schema -Dzimbra.buildinfo.version=8.8.15"
+su - zextras -c "cd $patchDir && perl processLdap.pl"
 

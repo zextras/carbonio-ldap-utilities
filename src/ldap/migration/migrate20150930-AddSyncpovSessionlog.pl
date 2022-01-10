@@ -1,38 +1,28 @@
 #!/usr/bin/perl
+
+# SPDX-FileCopyrightText: 2022 Synacor, Inc.
+# SPDX-FileCopyrightText: 2022 Zextras <https://www.zextras.com>
 #
-# ***** BEGIN LICENSE BLOCK *****
-# Zimbra Collaboration Suite Server
-# Copyright (C) 2015, 2016 Synacor, Inc.
-#
-# This program is free software: you can redistribute it and/or modify it under
-# the terms of the GNU General Public License as published by the Free Software Foundation,
-# version 2 of the License.
-#
-# This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-# See the GNU General Public License for more details.
-# You should have received a copy of the GNU General Public License along with this program.
-# If not, see <https://www.gnu.org/licenses/>.
-# ***** END LICENSE BLOCK *****
-#
+# SPDX-License-Identifier: GPL-2.0-only
+
 use strict;
-use lib '/opt/zimbra/common/lib/perl5';
+use lib '/opt/zextras/common/lib/perl5';
 use Net::LDAP;
 use XML::Simple;
 
-if ( !-d "/opt/zimbra/common/etc/openldap/schema" ) {
+if ( !-d "/opt/zextras/common/etc/openldap/schema" ) {
     warn "ERROR: openldap does not appear to be installed - exiting\n";
     exit(1);
 }
 
 my $id = getpwuid($<);
 chomp $id;
-if ( $id ne "zimbra" ) {
-    warn "Error: must be run as zimbra user\n";
+if ( $id ne "zextras" ) {
+    warn "Error: must be run as zextras user\n";
     exit(1);
 }
 
-my $localxml           = XMLin("/opt/zimbra/conf/localconfig.xml");
+my $localxml           = XMLin("/opt/zextras/conf/localconfig.xml");
 my $ldap_root_password = $localxml->{key}->{ldap_root_password}->{value};
 my $ldap_is_master     = $localxml->{key}->{ldap_is_master}->{value};
 chomp($ldap_is_master, $ldap_root_password);
@@ -42,7 +32,7 @@ if ( lc($ldap_is_master) ne "true" ) {
 }
 
 my $ldap =
-  Net::LDAP->new('ldapi://%2fopt%2fzimbra%2fdata%2fldap%2fstate%2frun%2fldapi/')
+  Net::LDAP->new('ldapi://%2fopt%2fzextras%2fdata%2fldap%2fstate%2frun%2fldapi/')
   or die "$@";
 
 my $mesg = $ldap->bind( "cn=config", password => "$ldap_root_password" );
