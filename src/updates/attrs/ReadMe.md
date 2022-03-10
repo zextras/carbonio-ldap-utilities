@@ -12,7 +12,7 @@ This directory hold the atrifacts required to update the existing LDAP install.
  3. and the update files.
 
 ### What are update files?
-Update files are the JSON files created following the pattern found in `example.json.template` that contains data that our update script (`src/libexec/ldapattribupdate`) consumes.
+Update files are the JSON files created following the pattern found in `example.json.template` that contains data that our update script (`src/libexec/ldapattributeupdate`) consumes.
 
 The aim is to have newly added entries/attributes to these JSON file in which will be installed in `/opt/zextras/common/etc/openldap/zimbra/updates/attrs/`
 
@@ -21,7 +21,7 @@ Update files are named as the value of last timestamp of  last commit on `attrs.
 
 ![](blob:https://zextras.atlassian.net/bb2b58e7-bafd-43cb-a480-f9ba7c9c0e88#media-blob-url=true&id=7c8a9cbd-3aa8-43b5-b59c-9822f497eee0&collection=contentId-2394128424&contextId=2394128424&mimeType=image%2Fpng&name=schema_proto.png&size=46878&height=369&width=544&alt=)
 
-### How update files are consumed by ldapattribupdate script?
-The `ldapattribupdate` script runs in postinstall part of the installation procedure in upgrade hook.
+### How update files are consumed by ldapattributeupdate script?
+The `ldapattributeupdate` script runs in postinstall part of the installation procedure in upgrade hook.
 This script runs after few other scripts that populate the LDIF files and install our schema in place where LDAP looks for them. The aim of these update file is to provide information to our  update script about: which entry got new attribute and when.
 
