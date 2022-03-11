@@ -18,6 +18,8 @@ About this script:
     the LDIF file, apply the update to the LDAP server for only those entries that require
     changes
     → update the zimbraLDAPSchemaVersion in LDAP with the last applied update file’s name
+    → unbind ldap
+    → exit
 =cut
 
 use strict;
@@ -103,7 +105,7 @@ if (-d "$ldap_attribute_update_dir") {
     &print_separater("-", "80");
 }
 else {
-    print "Attributes update directory($ldap_attribute_update_dir) not found.\n";
+    print "LDAP Schema/Attributes update directory($ldap_attribute_update_dir) not found.\nUnable to process LDAP updates.\n";
     $ldap->unbind;
     exit(1);
 }
@@ -134,6 +136,25 @@ sub getLocalConfig {
     return $val;
 }
 
+=begin update_zimbra_ldap_schema_version
+    update_zimbra_ldap_schema_version($last_applied_update_timestamp<string>);
+update the value of zimbraLDAPSchemaVersion in LDAP
+=cut
+sub update_zimbra_ldap_schema_version(){
+    my ($last_updated_timestamp) = @_;
+    my $result = $ldap->search(base => 'cn=zimbra', filter => '(zimbraLDAPSchemaVersion=*)', attrs => [ 'zimbraLDAPSchemaVersion' ]);
+    if ( $result->count > 0 ) {
+        my $entry = $result->entry(0);
+        if( $entry ){
+            $entry->replace( zimbraLDAPSchemaVersion => $last_updated_timestamp );
+        }
+        my $msg = $entry->update( $ldap );
+        if ( $msg->code() ) {
+            print "Error msg: ", $entry->dn(), " ", $msg->error(), "\n";
+        }
+    }
+}
+
 =begin prepare_update_file
     prepare_update_file($filename<string>);
 Prepare each update files for updating.
@@ -143,6 +164,7 @@ sub prepare_update_file(){
     # start, process only eligible update files ;
     my $infile_base_name = basename($infile);
     (my $timestamp_from_file = $infile_base_name) =~ s/\.[^.]+$//;
+    chomp $timestamp_from_file;
     &print_separater("-", "80");
     if ($timestamp_from_file > $zimbra_ldap_schema_version) {
         open(FH, '<', $infile) or die "Cannot open file $infile for reading: $!\n";
@@ -205,19 +227,18 @@ sub apply_update {
                     $entry->replace($attr => [ @$ref ]);
                 }
             }
-            if ( $updated > 0 ){
-                $last_applied_update_timestamp = $timestamp_from_file;
-            }
             my $msg = $entry->update($ldap);
             if ($msg->code()) {
                 print "Error msg: ", $entry->dn(), " ", $msg->error(), "\n";
+            }else{
+                if ( $updated > 0 ){
+                    $last_applied_update_timestamp = $timestamp_from_file;
+                }
             }
         }
     }
 }
 
-#TODO update zimbraLDAPSchemaVersion and exit
-
-
+&update_zimbra_ldap_schema_version($last_applied_update_timestamp);
 $ldap->unbind;
 exit(0);
