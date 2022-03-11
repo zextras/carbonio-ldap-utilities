@@ -71,7 +71,7 @@ if ($ldap_master_url !~ /^ldaps/i) {
 $mesg = $ldap->bind("cn=config", password => "$ldap_root_password");
 if ($mesg->code()) {
     print "Unable to bind: $!";
-    exit(1);
+    exit(0);
 }
 
 # get zimbraLDAPSchemaVersion from LDAP server
@@ -88,7 +88,7 @@ if ( $result->count > 0 ) {
 else {
     print "Unable to get zimbraLDAPSchemaVersion from LDAP.\n";
     $ldap->unbind;
-    exit(1);
+    exit(0);
 }
 
 # read updates folder and prepare each file for update;
@@ -107,7 +107,7 @@ if (-d "$ldap_attribute_update_dir") {
 else {
     print "LDAP Schema/Attributes update directory($ldap_attribute_update_dir) not found.\nUnable to process LDAP updates.\n";
     $ldap->unbind;
-    exit(1);
+    exit(0);
 }
 
 =begin print_separater
@@ -240,5 +240,6 @@ sub apply_update {
 }
 
 &update_zimbra_ldap_schema_version($last_applied_update_timestamp);
+print "LDAP schema upgraded to version $last_applied_update_timestamp \n";
 $ldap->unbind;
 exit(0);
