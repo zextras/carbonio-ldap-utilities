@@ -2,17 +2,17 @@
 This directory hold the atrifacts required to update the existing LDAP install.
 
 ### WARNINGS:
-1. Make sure they are valid JSON files and follows the schema provided in `example.json.template` file.  The upgrade script will simply ignore the file otherwise and will leads to a system that do not have new updates installed.
+1. Make sure they are valid JSON files and follows the schema provided in `example.template` file.  The upgrade script will simply ignore the file otherwise and will leads to a system that do not have new updates installed.
 2. Make sure update files are named properly based on the instructions provided below.
 3. Any file other than JSON extension is ignored by the upgrade script and make no sense to be part of this directory (the exceptions are provided below).
 
 ### Content that is supposed to reside to this directory:
- 1. example.json.template (The template developer have to use to create <update-timestamp>.json files.)
+ 1. example.template (The template developer have to use to create <update-timestamp>.json files.)
  2. Readme (this file)
  3. and the update files.
 
 ### What are update files?
-Update files are the JSON files created following the pattern found in `example.json.template` that contains data that our update script (`src/libexec/ldapattributeupdate`) consumes.
+Update files are the JSON files created following the pattern found in `example.template` that contains data that our update script (`src/libexec/ldapattributeupdate`) consumes.
 
 The aim is to have newly added entries/attributes to these JSON file in which will be installed in `/opt/zextras/common/etc/openldap/zimbra/updates/attrs/`
 
