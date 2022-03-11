@@ -142,18 +142,18 @@ update the value of zimbraLDAPSchemaVersion in LDAP
 =cut
 sub update_zimbra_ldap_schema_version(){
     my ($last_updated_timestamp) = @_;
-    my $result = $ldap->search(base => 'cn=zimbra', filter => '(zimbraLDAPSchemaVersion=*)', attrs => [ 'zimbraLDAPSchemaVersion' ]);
-    if ( $result->count > 0 ) {
-        my $entry = $result->entry(0);
-        if( $entry ){
-            $entry->replace( zimbraLDAPSchemaVersion => $last_updated_timestamp );
-        }
-        my $msg = $entry->update( $ldap );
-        if ( $msg->code() ) {
-            print "Error msg: ", $entry->dn(), " ", $msg->error(), "\n";
-        }
-    }
     if( $zimbra_ldap_schema_version ne $last_updated_timestamp ) {
+        my $result = $ldap->search(base => 'cn=zimbra', filter => '(zimbraLDAPSchemaVersion=*)', attrs => [ 'zimbraLDAPSchemaVersion' ]);
+        if ( $result->count > 0 ) {
+            my $entry = $result->entry(0);
+            if( $entry ){
+                $entry->replace( zimbraLDAPSchemaVersion => $last_updated_timestamp );
+            }
+            my $msg = $entry->update( $ldap );
+            if ( $msg->code() ) {
+                print "Error msg: ", $entry->dn(), " ", $msg->error(), "\n";
+            }
+        }
         print "LDAP schema upgraded to version $last_updated_timestamp \n";
     }
 }
