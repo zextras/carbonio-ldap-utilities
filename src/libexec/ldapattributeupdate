@@ -153,6 +153,9 @@ sub update_zimbra_ldap_schema_version(){
             print "Error msg: ", $entry->dn(), " ", $msg->error(), "\n";
         }
     }
+    if( $zimbra_ldap_schema_version ne $last_updated_timestamp ) {
+        print "LDAP schema upgraded to version $last_updated_timestamp \n";
+    }
 }
 
 =begin prepare_update_file
@@ -240,6 +243,5 @@ sub apply_update {
 }
 
 &update_zimbra_ldap_schema_version($last_applied_update_timestamp);
-print "LDAP schema upgraded to version $last_applied_update_timestamp \n";
 $ldap->unbind;
 exit(0);
