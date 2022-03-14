@@ -274,6 +274,9 @@
     <copy todir="${build.dir}/ldap-config/config/cn=config/olcDatabase={2}mdb" file="${slapd.config.dir}/cn=config/olcDatabase={2}mdb/olcOverlay={0}dynlist.ldif" />
     <copy todir="${build.dir}/ldap-config/config/cn=config/olcDatabase={2}mdb" file="${slapd.config.dir}/cn=config/olcDatabase={2}mdb/olcOverlay={1}unique.ldif" />
     <copy todir="${build.dir}/ldap-config/config/cn=config/olcDatabase={2}mdb" file="${slapd.config.dir}/cn=config/olcDatabase={2}mdb/olcOverlay={2}noopsrch.ldif" />
+    <copy todir="${build.dir}/ldap-config/updates/">
+      <fileset dir="src/updates/" includes="**" />
+    </copy>
 
     <!--schema -->
 
