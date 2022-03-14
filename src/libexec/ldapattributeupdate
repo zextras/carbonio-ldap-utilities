@@ -76,12 +76,12 @@ if ($mesg->code()) {
 
 # get zimbraLDAPSchemaVersion from LDAP server
 my $zimbra_ldap_schema_version;
-my $last_applied_update_timestamp;
+my $last_applied_update_version;
 my $result = $ldap->search(base => 'cn=zimbra', filter => '(zimbraLDAPSchemaVersion=*)', attrs => [ 'zimbraLDAPSchemaVersion' ]);
 if ( $result->count > 0 ) {
     my $entry = $result->entry(0);
     $zimbra_ldap_schema_version = $entry->get_value('zimbraLDAPSchemaVersion');
-    $last_applied_update_timestamp = $zimbra_ldap_schema_version;
+    $last_applied_update_version = $zimbra_ldap_schema_version;
     &print_separater("-", "40");
     print "Installed LDAP Schema Version: $zimbra_ldap_schema_version \n";
 }
@@ -137,7 +137,7 @@ sub getLocalConfig {
 }
 
 =begin update_zimbra_ldap_schema_version
-    update_zimbra_ldap_schema_version($last_applied_update_timestamp<string>);
+    update_zimbra_ldap_schema_version($last_applied_update_version<string>);
 update the value of zimbraLDAPSchemaVersion in LDAP
 =cut
 sub update_zimbra_ldap_schema_version(){
@@ -235,13 +235,13 @@ sub apply_update {
                 print "Error msg: ", $entry->dn(), " ", $msg->error(), "\n";
             }else{
                 if ( $updated > 0 ){
-                    $last_applied_update_timestamp = $timestamp_from_file;
+                    $last_applied_update_version = $timestamp_from_file;
                 }
             }
         }
     }
 }
 
-&update_zimbra_ldap_schema_version($last_applied_update_timestamp);
+&update_zimbra_ldap_schema_version($last_applied_update_version);
 $ldap->unbind;
 exit(0);
