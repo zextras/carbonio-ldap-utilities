@@ -1,0 +1,8 @@
+{
+  "zimbra_defaultcos": [
+    "zimbraPasswordBlockCommonEnabled"
+  ],
+  "zimbra_defaultexternalcos": [
+    "zimbraPasswordBlockCommonEnabled"
+  ]
+}
