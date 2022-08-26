@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!--
-SPDX-FileCopyrightText: 2022 Zextras <https://www.zextras.com>
-
-SPDX-License-Identifier: AGPL-3.0-only
--->
-
 <!-- NOTE: we do not generate schema for these attrs.  This file is
      only for the runtime use of the server and tools for verifying
      attr values. -->
