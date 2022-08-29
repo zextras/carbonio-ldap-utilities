@@ -52,7 +52,7 @@ pipeline {
                                                url: 'git@github.com:zextras/carbonio-mailbox.git'
                                              ]]
                          ])
-                    sh 'git checkout $(git tag | tail -1)'
+                    sh 'git checkout $(git describe --tags $(git rev-list --tags --max-count=1))'
                 }
                 sh 'cp -r mailbox/store .'
                 sh 'rm -rf mailbox'
