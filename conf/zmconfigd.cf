@@ -2,40 +2,7 @@ SECTION dhparam
 	VAR zimbraSSLDHParam
 	MAPFILE zimbraSSLDHParam
 
-SECTION amavis
-	REWRITE conf/amavisd.conf.in conf/amavisd.conf
-	POSTCONF content_filter
-	if SERVICE antivirus
-		POSTCONF content_filter FILE zmconfigd/postfix_content_filter.cf
-	fi
-	if SERVICE antispam
-		POSTCONF content_filter FILE zmconfigd/postfix_content_filter.cf
-	fi
-	LOCAL av_notify_domain
-	LOCAL av_notify_user
-	LOCAL ldap_url
-	LOCAL ldap_amavis_password
-	VAR zimbraAmavisEnableDKIMVerification
-	VAR zimbraAmavisMaxServers
-	VAR zimbraAmavisOriginatingBypassSA
-	VAR zimbraMtaBlockedExtension
-	VAR zimbraVirusWarnRecipient
-	VAR zimbraSpamKillPercent
-	VAR zimbraSpamTagPercent
-	VAR zimbraSpamSubjectTag
-	VAR zimbraAmavisQuarantineAccount
-	VAR zimbraAmavisDSPAMEnabled
-	VAR zimbraMtaMyNetworks
-	VAR zimbraDomainMandatoryMailSignatureEnabled
-	VAR zimbraIPMode
-	VAR zimbraQuarantineBannedItems
-	VAR zimbraAmavisFinalSpamDestiny
-	VAR zimbraAmavisLogLevel
-	VAR zimbraAmavisSALogLevel
-	VAR zimbraAmavisOutboundDisclaimersOnly
-	RESTART antivirus amavis mta
-
-SECTION antivirus DEPENDS amavis
+SECTION antivirus
 	REWRITE conf/clamd.conf.in conf/clamd.conf
 	REWRITE conf/freshclam.conf.in conf/freshclam.conf MODE 0600
 	VAR zimbraVirusWarnAdmin
@@ -46,21 +13,9 @@ SECTION antivirus DEPENDS amavis
 	VAR zimbraClamAVListenPort
 	VAR zimbraClamAVBindAddress
 	VAR zimbraClamAVDatabaseMirror
-	RESTART antivirus mta
+	RESTART antivirus
 
-SECTION antispam DEPENDS amavis
-	REWRITE conf/salocal.cf.in data/spamassassin/localrules/salocal.cf
-	REWRITE conf/dspam.conf.in conf/dspam.conf
-	VAR zimbraMtaMyNetworks
-	VAR zimbraMtaAntiSpamLockMethod
-	LOCAL antispam_mysql_enabled
-	LOCAL antispam_mysql_host
-	LOCAL antispam_mysql_port
-	LOCAL antispam_mysql_user
-	LOCAL antispam_mysql_password
-	RESTART antispam mta
-
-SECTION mta DEPENDS amavis
+SECTION mta
 	LOCAL postjournal_enabled
 	MAPLOCAL zimbraSSLDHParam
 	REWRITE common/conf/master.cf.in common/conf/master.cf
@@ -68,7 +23,6 @@ SECTION mta DEPENDS amavis
 	REWRITE common/conf/tag_as_originating.re.in common/conf/tag_as_originating.re
 	REWRITE conf/mta_milter_options.in conf/mta_milter_options
 	VAR zimbraMtaEnableSmtpdPolicyd
-	VAR zimbraAmavisMaxServers
 	VAR zimbraIPMode
 	VAR zimbraMtaRestriction
 	VAR zimbraMtaFallbackRelayHost
