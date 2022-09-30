@@ -58,16 +58,16 @@ LogFacility LOG_LOCAL0
 
 # Log additional information about the infected file, such as its
 # size and hash, together with the virus name.
-#ExtendedDetectionInfo yes
+ExtendedDetectionInfo yes
 
 # This option allows you to save a process identifier of the listening
 # daemon (main thread).
 # Default: disabled
-PidFile /opt/zextras/log/clamd.pid
+PidFile /opt/zextras/data/clamav/clamd.pid
 
 # Optional path to the global temporary directory.
 # Default: system specific (usually /tmp or /var/tmp).
-#TemporaryDirectory /var/tmp
+TemporaryDirectory /opt/zextras/data/clamav/tmp
 
 # Path to the database directory.
 # Default: hardcoded (depends on installation options)
@@ -252,7 +252,7 @@ User zextras
 # not flagged as virus or that hit limits checks. Disabling the cache will
 # have a negative performance impact on large scans.
 # Default: no
-#DisableCache yes
+DisableCache yes
 
 ##
 ## Executable files
@@ -299,7 +299,7 @@ User zextras
 # If you turn off this option, the original files will still be scanned, but
 # without additional processing.
 # Default: yes
-#ScanOLE2 yes
+ScanOLE2 no
 
 # With this option enabled OLE2 files with VBA macros, which were not
 # detected by signatures will be marked as "Heuristics.OLE2.ContainsMacros".
@@ -310,7 +310,7 @@ User zextras
 # If you turn off this option, the original files will still be scanned, but
 # without decoding and additional processing.
 # Default: yes
-#ScanPDF yes
+ScanPDF yes
 
 # This option enables scanning within SWF files.
 # If you turn off this option, the original files will still be scanned, but
@@ -327,7 +327,7 @@ User zextras
 # If you turn off this option, the original files will still be scanned, but
 # without parsing individual messages/attachments.
 # Default: yes
-#ScanMail yes
+ScanMail no
 
 # Scan RFC1341 messages split over many emails.
 # You will need to periodically clean up $TemporaryDirectory/clamav-partial directory.
@@ -415,7 +415,7 @@ User zextras
 # Default: yes
 # If you turn off this option, the original files will still be scanned, but
 # without additional processing.
-#ScanHTML yes
+ScanHTML no
 
 
 ##
@@ -426,7 +426,7 @@ User zextras
 # If you turn off this option, the original files will still be scanned, but
 # without unpacking and additional processing.
 # Default: yes
-#ScanArchive yes
+ScanArchive no
 
 # Mark encrypted archives as viruses (Encrypted.Zip, Encrypted.RAR).
 # Default: no
