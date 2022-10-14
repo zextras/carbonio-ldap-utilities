@@ -1,0 +1,12 @@
+{
+   "zimbra_globalconfig":[
+      "carbonioWebUiDarkMode",
+      "carbonioWebUiTitle",
+      "carbonioWebUiDescription",
+      "carbonioAdminUiTitle",
+      "carbonioAdminUiDescription"
+   ],
+   "zimbra_defaultcos":[
+      "carbonioPrefWebUIDarkMode"
+   ]
+}
