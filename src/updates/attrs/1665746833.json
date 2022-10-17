@@ -4,9 +4,10 @@
       "carbonioWebUiTitle",
       "carbonioWebUiDescription",
       "carbonioAdminUiTitle",
-      "carbonioAdminUiDescription"
+      "carbonioAdminUiDescription",
+      "carbonioVideoServerRecordingEnabled"
    ],
    "zimbra_defaultcos":[
-      "carbonioPrefWebUIDarkMode"
+      "carbonioPrefWebUiDarkMode"
    ]
 }
