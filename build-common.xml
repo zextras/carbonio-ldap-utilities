@@ -174,21 +174,22 @@
   </condition>
 
   <target depends="carbonio-version" name="require-version">
-    <echo message="Using version ${zimbra.buildinfo.version}" />
     <property name="zimbra.buildinfo.version" value="${carbonio.buildinfo.version}" />
+    <echo message="Using version ${zimbra.buildinfo.version}" />
   </target>
 
+
   <target name="carbonio-version">
-    <fail message="Missing build version. use ant proper ZCS version like -Dcarbonio.buildinfo.version=23.1.0_ZEXTRAS_202301">
+    <fail message="Missing build version. use ant proper ZCS version like -Dcarbonio.buildinfo.version=23.2.0_ZEXTRAS_202302">
       <condition>
         <not>
-          <isset property="carbonio.buildinfo.version" />
+          <isset property="carbonio.buildinfo.version"/>
         </not>
       </condition>
     </fail>
   </target>
 
-  <target name="set-dev-version" depends="require-version,3rd-party-defines">
+  <target name="set-dev-version" depends="require-version, 3rd-party-defines">
     <antcontrib:if>
       <not>
         <isset property="jar.file" />
