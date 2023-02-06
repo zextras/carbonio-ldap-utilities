@@ -10,7 +10,7 @@ metadata:
     backstage.io/techdocs-ref: dir:.
   tags:
     - ldap
-    - carbonio-core
+    - carbonio-ldap-utilities
 spec:
   type: configuration
   lifecycle: production
