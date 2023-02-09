@@ -1,0 +1,17 @@
+# see https://backstage.io/docs/features/software-catalog/descriptor-format#kind-component for more component conf info
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: carbonio-ldap-utilities
+  title: Carbonio Ldap Utilities
+  description: |
+    Project containing configuration files and tools for Ldap schema updates
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+  tags:
+    - ldap
+    - carbonio-ldap-utilities
+spec:
+  type: configuration
+  lifecycle: production
+  owner: new-bacon-monsters
