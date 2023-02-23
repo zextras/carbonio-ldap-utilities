@@ -3,6 +3,7 @@
     "zimbraMtaSmtpdRejectUnlistedRecipient",
     "zimbraMtaSmtpdRejectUnlistedSender",
     "zimbraMtaSmtpdSenderRestrictions",
-    "zimbraMtaSmtpdSenderLoginMaps"
+    "zimbraMtaSmtpdSenderLoginMaps",
+    "carbonioLogoUrl"
   ]
 }
