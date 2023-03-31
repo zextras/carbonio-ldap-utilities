@@ -61,7 +61,7 @@ foreach $entry (@entries)  {
             carbonioFeatureMeetingEnabled => "FALSE",
             carbonioFeatureTeamEnabled => "FALSE",
         },
-        replace=> {carbonioFeatureChatsEnabled => "TRUE"}
+        replace=> {carbonioFeatureChatsEnabled => "FALSE"}
     );
     $mesg->code && print STDERR "Failed to update entry with dn: $dn: ", $mesg->error ;
 
