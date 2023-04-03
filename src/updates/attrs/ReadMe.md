@@ -1,5 +1,5 @@
 ## About this Directory
-This directory hold the atrifacts required to update the existing LDAP install.
+This directory hold the artifacts required to update the existing LDAP install.
 
 ### WARNINGS:
 1. Make sure they are valid JSON files and follows the schema provided in `example.template` file.  The upgrade script will simply ignore the file otherwise and will leads to a system that do not have new updates installed.
