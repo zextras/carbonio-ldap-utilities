@@ -102,7 +102,7 @@ if (-d "$ldap_attribute_cleanup_dir") {
     &print_separater("-", "80");
 }
 else {
-    print "LDAP Schema/Attributes update directory($ldap_attribute_cleanup_dir) not found.\nUnable to process LDAP updates.\n";
+    print "LDAP cleanup directory($ldap_attribute_cleanup_dir) not found.\nUnable to process LDAP cleanup.\n";
     $ldap->unbind;
     exit(0);
 }
@@ -133,11 +133,33 @@ sub getLocalConfig {
     return $val;
 }
 
+=begin update_zimbra_ldap_schema_version
+    update_zimbra_ldap_schema_version($last_applied_update_version<string>);
+update the value of zimbraLDAPSchemaVersion in LDAP
+=cut
+sub update_zimbra_ldap_schema_version(){
+    my ($last_updated_timestamp) = @_;
+    if( $zimbra_ldap_schema_version ne $last_updated_timestamp ) {
+        my $result = $ldap->search(base => 'cn=zimbra', filter => '(zimbraLDAPSchemaVersion=*)', attrs => [ 'zimbraLDAPSchemaVersion' ]);
+        if ( $result->count > 0 ) {
+            my $entry = $result->entry(0);
+            if( $entry ){
+                $entry->replace( zimbraLDAPSchemaVersion => $last_updated_timestamp );
+            }
+            my $msg = $entry->update( $ldap );
+            if ( $msg->code() ) {
+                print "Error msg: ", $entry->dn(), " ", $msg->error(), "\n";
+            }
+        }
+        print "LDAP schema upgraded to version $last_updated_timestamp \n";
+    }
+}
+
 =begin prepare_cleanup_file
     prepare_cleanup_file($filename<string>);
-Prepare each update files for updating.
+Checks cleanup file timestamp again schema version and applies it if eligible.
 =cut
-sub prepare_cleanup_file(){
+sub process_cleanup_file(){
     my ($infile) = @_;
     my $infile_base_name = basename($infile);
     (my $timestamp_from_file = $infile_base_name) =~ s/\.[^.]+$//;
@@ -151,7 +173,8 @@ sub prepare_cleanup_file(){
             my $json_decoded = $json->decode($raw_json);
             print "Executing cleanup from ", $timestamp_from_file, ".json\n";
                 my @attributes = @{$json_decoded->{"delete"}};
-                &apply_cleanup($timestamp_from_file, \@attributes);
+                &apply_cleanup(\@attributes);
+                &update_zimbra_ldap_schema_version($last_applied_update_version);
             1;
         } or do {
             my $e = $@;
@@ -168,11 +191,11 @@ sub prepare_cleanup_file(){
 
 
 =begin apply_cleanup
-    apply_cleanup($timestamp_from_file<string>, @attributes<array>);
-Removes the attributes in the entry.
+    apply_cleanup(@attributes<array>);
+Removes provided attributes from all entries in LDAP.
 =cut
 sub apply_cleanup {
-    my ($timestamp_from_file, $attributes) = @_;
+    my ($attributes) = @_;
     foreach my $attribute (@$attributes) {
         $mesg = $ldap ->search(
             base=>"",
