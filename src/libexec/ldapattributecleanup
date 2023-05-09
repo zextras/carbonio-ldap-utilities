@@ -68,7 +68,7 @@ if ($ldap_master_url !~ /^ldaps/i) {
     }
 }
 
-# bind ldap or exit with error on failure fail
+# bind ldap or exit with error on failure
 $mesg = $ldap->bind("cn=config", password => "$ldap_root_password");
 if ($mesg->code()) {
     print STDERR "Unable to bind: $!";
@@ -94,15 +94,15 @@ else {
 
 # read updates folder and prepare each file for update;
 if (-d "$ldap_attribute_cleanup_dir") {
-    my $failure = 0;
+    my $failed = 0;
     opendir(DIR, "$ldap_attribute_cleanup_dir") or die "Cannot opendir $ldap_attribute_cleanup_dir: $!\n";
     my @cleanup_files =  sort { $a <=> $b } readdir(DIR);
     while ( my $file = shift @cleanup_files ) {
         next unless (-f "$ldap_attribute_cleanup_dir/$file");
         next unless ($file =~ m/json/);
         my $infile = "$ldap_attribute_cleanup_dir/$file";
-        failure = &prepare_cleanup_file($infile);
-        if ($failure) {
+        failed = &prepare_cleanup_file($infile);
+        if ($failed) {
             print STDERR "Cleanup ", $file, "failed.\n";
             # exit while loop
             last;
@@ -111,7 +111,7 @@ if (-d "$ldap_attribute_cleanup_dir") {
     closedir DIR;
     &print_separater("-", "80");
     $ldap->unbind;
-    if ($failure) {
+    if ($failed) {
         print STDERR "Cleanup failed.\n";
         &print_separater("-", "80");
         exit(1);
@@ -155,7 +155,7 @@ sub getLocalConfig {
 =begin update_zimbra_ldap_schema_version
     update_zimbra_ldap_schema_version($last_applied_update_version<string>);
 update the value of zimbraLDAPSchemaVersion in LDAP.
-return failure status (true/false).
+return failed status (true/false).
 =cut
 sub update_zimbra_ldap_schema_version(){
     my ($new_timestamp) = @_;
@@ -180,11 +180,11 @@ sub update_zimbra_ldap_schema_version(){
 =begin prepare_cleanup_file
     prepare_cleanup_file($filename<string>);
 Checks cleanup file timestamp again schema version and applies it if eligible.
-returns failure status (true/false)
+returns failed status (true/false)
 =cut
 sub prepare_cleanup_file(){
     my ($infile) = @_;
-    my $failure = 0;
+    my $failed = 0;
     my $infile_base_name = basename($infile);
     (my $timestamp_from_file = $infile_base_name) =~ s/\.[^.]+$//;
     chomp $timestamp_from_file;
@@ -197,12 +197,12 @@ sub prepare_cleanup_file(){
             my $json_decoded = $json->decode($raw_json);
             print STDOUT "Executing cleanup from ", $timestamp_from_file, ".json\n";
                 my @attributes = @{$json_decoded->{"delete"}};
-                failure = &apply_cleanup(\@attributes);
-                if ($failure) {
+                failed = &apply_cleanup(\@attributes);
+                if ($failed) {
                     print STDERR "Cleanup from ", $timestamp_from_file, ".json failed.\n";
                 } else {
-                    failure = &update_zimbra_ldap_schema_version($timestamp_from_file);
-                    if ($failure) {
+                    failed = &update_zimbra_ldap_schema_version($timestamp_from_file);
+                    if ($failed) {
                         print STDERR "Could not update schema version to ", $timestamp_from_file, ".\n";
                     }
                 }
@@ -210,19 +210,19 @@ sub prepare_cleanup_file(){
         } or do {
             my $e = $@;
             # TODO: should fail and not skip
-            $failure = 1;
+            $failed = 1;
             print STDERR "Failed to evaluate file $timestamp_from_file.json\n    Reason: $e\n. Exiting\n";
         };
     }
     close(FH);
-    return $failure;
+    return $failed;
 }
 
 
 =begin apply_cleanup
     apply_cleanup(@attributes<array>);
 Removes provided attributes from all entries in LDAP.
-returns failure status (true or false)
+returns failed status (true or false)
 =cut
 sub apply_cleanup {
     my ($attributes) = @_;
