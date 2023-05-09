@@ -188,8 +188,8 @@ sub prepare_cleanup_file(){
     my $infile_base_name = basename($infile);
     (my $timestamp_from_file = $infile_base_name) =~ s/\.[^.]+$//;
     chomp $timestamp_from_file;
-    &print_separater("-", "80");
     if ($timestamp_from_file > $zimbra_ldap_schema_version) {
+        &print_separater("-", "80");
         open(FH, '<', $infile) or die "Cannot open file $infile for reading: $!\n";
         my $raw_json = join '', <FH>;
         my $json = new JSON::PP;
