@@ -185,9 +185,6 @@ sub prepare_cleanup_file(){
             print "Skipping: $timestamp_from_file.json\n    Reason: $e\n";
         };
     }
-    else {
-        print "Skipping: $timestamp_from_file.json\n    Reason: not eligible for this update.\n";
-    }
     close(FH);
     # end, process only eligible update files;
 }
