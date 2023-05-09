@@ -215,9 +215,9 @@ else {
     exit(1);
 }
 
-my $failure = 0;
 # read updates folder and prepare each file for update;
 if (-d "$ldap_attribute_cleanup_dir") {
+    my $failure = 0;
     opendir(DIR, "$ldap_attribute_cleanup_dir") or die "Cannot opendir $ldap_attribute_cleanup_dir: $!\n";
     my @cleanup_files =  sort { $a <=> $b } readdir(DIR);
     while ( my $file = shift @cleanup_files ) {
@@ -226,13 +226,21 @@ if (-d "$ldap_attribute_cleanup_dir") {
         my $infile = "$ldap_attribute_cleanup_dir/$file";
         failure = &prepare_cleanup_file($infile);
         if ($failure) {
-            print STDERR "Cleanup ", $file, "failed.\n";
             # exit while loop
             last;
         }
     }
     closedir DIR;
     &print_separater("-", "80");
+    $ldap->unbind;
+    if ($failure) {
+        print STDERR "Cleanup ", $file, "failed.\n";
+        &print_separater("-", "80");
+        exit(1);
+    }
+    print STDOUT "Cleanup completed.\n";
+    &print_separater("-", "80");
+    exit(0);
 }
 else {
     print STDERR "LDAP cleanup directory($ldap_attribute_cleanup_dir) not found.\nUnable to process LDAP cleanup.\n";
@@ -240,9 +248,3 @@ else {
     exit(1);
 }
 
-$ldap->unbind;
-print STDOUT "Cleanup completed.\n";
-
-&print_separater("-", "80");
-
-exit($failure);
