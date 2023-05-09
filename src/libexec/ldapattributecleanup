@@ -42,6 +42,7 @@ my $ldap_starttls_supported = getLocalConfig("ldap_starttls_supported");
 my $zimbra_tmp_directory = getLocalConfig("zimbra_tmp_directory");
 
 if (lc($ldap_is_master) ne "true") {
+    print STDERR "Must run on master ldap.\n";
     exit(1);
 }
 
@@ -70,7 +71,7 @@ if ($ldap_master_url !~ /^ldaps/i) {
 # bind ldap or exit with error on failure fail
 $mesg = $ldap->bind("cn=config", password => "$ldap_root_password");
 if ($mesg->code()) {
-    print "Unable to bind: $!";
+    print STDERR "Unable to bind: $!";
     exit(1);
 }
 
@@ -83,10 +84,10 @@ if ( $result->count > 0 ) {
     $zimbra_ldap_schema_version = $entry->get_value('zimbraLDAPSchemaVersion');
     $last_applied_update_version = $zimbra_ldap_schema_version;
     &print_separater("-", "40");
-    print "Current installed LDAP Schema Version: $zimbra_ldap_schema_version \n";
+    print STDOUT "Current installed LDAP Schema Version: $zimbra_ldap_schema_version \n";
 }
 else {
-    print "Unable to get zimbraLDAPSchemaVersion from LDAP.\n";
+    print STDERR "Unable to get zimbraLDAPSchemaVersion from LDAP.\n";
     $ldap->unbind;
     exit(1);
 }
@@ -105,7 +106,7 @@ if (-d "$ldap_attribute_cleanup_dir") {
     &print_separater("-", "80");
 }
 else {
-    print "LDAP cleanup directory($ldap_attribute_cleanup_dir) not found.\nUnable to process LDAP cleanup.\n";
+    print STDERR "LDAP cleanup directory($ldap_attribute_cleanup_dir) not found.\nUnable to process LDAP cleanup.\n";
     $ldap->unbind;
     exit(1);
 }
@@ -138,7 +139,8 @@ sub getLocalConfig {
 
 =begin update_zimbra_ldap_schema_version
     update_zimbra_ldap_schema_version($last_applied_update_version<string>);
-update the value of zimbraLDAPSchemaVersion in LDAP
+update the value of zimbraLDAPSchemaVersion in LDAP.
+return failure status (true/false).
 =cut
 sub update_zimbra_ldap_schema_version(){
     my ($new_timestamp) = @_;
@@ -151,10 +153,12 @@ sub update_zimbra_ldap_schema_version(){
             }
             my $msg = $entry->update( $ldap );
             if ( $msg->code() ) {
-                print "Error msg: ", $entry->dn(), " ", $msg->error(), "\n";
+                print STDERR "Error msg: ", $entry->dn(), " ", $msg->error(), "\n";
+                return 1;
             }
         }
-        print "LDAP schema upgraded to version $new_timestamp \n";
+        print STDOUT "LDAP schema upgraded to version $new_timestamp \n";
+        return 0;
     }
 }
 
@@ -175,16 +179,23 @@ sub prepare_cleanup_file(){
         my $json = new JSON::PP;
         eval {
             my $json_decoded = $json->decode($raw_json);
-            print "Executing cleanup from ", $timestamp_from_file, ".json\n";
+            print STDOUT "Executing cleanup from ", $timestamp_from_file, ".json\n";
                 my @attributes = @{$json_decoded->{"delete"}};
-                &apply_cleanup(\@attributes);
-                &update_zimbra_ldap_schema_version($timestamp_from_file);
+                failure = &apply_cleanup(\@attributes);
+                if ($failure) {
+                    print STDERR "Cleanup from ", $timestamp_from_file, ".json failed.\n";
+                } else {
+                    failure = &update_zimbra_ldap_schema_version($timestamp_from_file);
+                    if ($failure) {
+                        print STDERR "Could not update schema version to ", $timestamp_from_file, ".\n";
+                    }
+                }
             1;
         } or do {
             my $e = $@;
             # TODO: should fail and not skip
             $failure = 1;
-            print "Failed to evaluate file $timestamp_from_file.json\n    Reason: $e\n. Exiting\n";
+            print STDERR "Failed to evaluate file $timestamp_from_file.json\n    Reason: $e\n. Exiting\n";
         };
     }
     close(FH);
@@ -198,6 +209,7 @@ sub prepare_cleanup_file(){
 =begin apply_cleanup
     apply_cleanup(@attributes<array>);
 Removes provided attributes from all entries in LDAP.
+returns failure status (true or false)
 =cut
 sub apply_cleanup {
     my ($attributes) = @_;
@@ -212,12 +224,19 @@ sub apply_cleanup {
         print STDOUT "Found $size entries with attribute $attribute.\n";
 
         foreach my $entry (@entries)  {
-            $entry->delete($attribute);
-            $entry->update ( $ldap ); # applies delete
+            my $msg = $entry->delete($attribute);
+            $msg = $entry->update ( $ldap ); # applies delete
+            if ( $msg->code() ) {
+                print STDERR $msg->error(), "\n";
+                return 1;
+            }
         }
     }
+    return 0;
 }
 $ldap->unbind;
-print "Cleanup completed.\n";
+print STDOUT "Cleanup completed.\n";
+
 &print_separater("-", "80");
+
 exit(0);
