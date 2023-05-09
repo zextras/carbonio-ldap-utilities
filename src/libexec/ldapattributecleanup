@@ -234,7 +234,7 @@ sub apply_cleanup {
         );
         my @entries = $mesg->entries;
         my $size = @entries;
-        print STDOUT "Found $size entries with attribute $attribute.\n";
+        print STDOUT "Found $size entries with attribute $attribute\n";
 
         foreach my $entry (@entries)  {
             my $msg = $entry->delete($attribute);
