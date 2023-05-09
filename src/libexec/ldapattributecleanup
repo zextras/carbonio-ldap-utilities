@@ -30,6 +30,7 @@ use JSON::PP;
 use File::Basename;
 use experimental 'smartmatch';
 
+&print_separater("-", "80");
 print "Starting LDAP cleanup...\n";
 
 my $source_config_dir = "/opt/zextras/common/etc/openldap";
@@ -216,4 +217,5 @@ sub apply_cleanup {
 }
 $ldap->unbind;
 print "Cleanup completed.\n";
+&print_separater("-", "80");
 exit(0);
