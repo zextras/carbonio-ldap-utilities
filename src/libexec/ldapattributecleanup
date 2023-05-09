@@ -94,16 +94,31 @@ else {
 
 # read updates folder and prepare each file for update;
 if (-d "$ldap_attribute_cleanup_dir") {
+    my $failure = 0;
     opendir(DIR, "$ldap_attribute_cleanup_dir") or die "Cannot opendir $ldap_attribute_cleanup_dir: $!\n";
     my @cleanup_files =  sort { $a <=> $b } readdir(DIR);
     while ( my $file = shift @cleanup_files ) {
         next unless (-f "$ldap_attribute_cleanup_dir/$file");
         next unless ($file =~ m/json/);
         my $infile = "$ldap_attribute_cleanup_dir/$file";
-        &prepare_cleanup_file($infile);
+        failure = &prepare_cleanup_file($infile);
+        if ($failure) {
+            print STDERR "Cleanup ", $file, "failed.\n";
+            # exit while loop
+            last;
+        }
     }
     closedir DIR;
     &print_separater("-", "80");
+    $ldap->unbind;
+    if ($failure) {
+        print STDERR "Cleanup failed.\n";
+        &print_separater("-", "80");
+        exit(1);
+    }
+    print STDOUT "Cleanup completed.\n";
+    &print_separater("-", "80");
+    exit(0);
 }
 else {
     print STDERR "LDAP cleanup directory($ldap_attribute_cleanup_dir) not found.\nUnable to process LDAP cleanup.\n";
@@ -165,6 +180,7 @@ sub update_zimbra_ldap_schema_version(){
 =begin prepare_cleanup_file
     prepare_cleanup_file($filename<string>);
 Checks cleanup file timestamp again schema version and applies it if eligible.
+returns failure status (true/false)
 =cut
 sub prepare_cleanup_file(){
     my ($infile) = @_;
@@ -199,10 +215,7 @@ sub prepare_cleanup_file(){
         };
     }
     close(FH);
-    if ($failure) {
-        exit(1)
-    }
-    # end, process only eligible update files;
+    return $failure;
 }
 
 
@@ -234,9 +247,3 @@ sub apply_cleanup {
     }
     return 0;
 }
-$ldap->unbind;
-print STDOUT "Cleanup completed.\n";
-
-&print_separater("-", "80");
-
-exit(0);
