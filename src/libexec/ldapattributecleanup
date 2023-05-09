@@ -82,7 +82,7 @@ if ( $result->count > 0 ) {
     $zimbra_ldap_schema_version = $entry->get_value('zimbraLDAPSchemaVersion');
     $last_applied_update_version = $zimbra_ldap_schema_version;
     &print_separater("-", "40");
-    print "Installed LDAP Schema Version: $zimbra_ldap_schema_version \n";
+    print "Current installed LDAP Schema Version: $zimbra_ldap_schema_version \n";
 }
 else {
     print "Unable to get zimbraLDAPSchemaVersion from LDAP.\n";
@@ -140,20 +140,20 @@ sub getLocalConfig {
 update the value of zimbraLDAPSchemaVersion in LDAP
 =cut
 sub update_zimbra_ldap_schema_version(){
-    my ($last_updated_timestamp) = @_;
-    if( $zimbra_ldap_schema_version ne $last_updated_timestamp ) {
+    my ($new_timestamp) = @_;
+    if( $zimbra_ldap_schema_version ne $new_timestamp ) {
         my $result = $ldap->search(base => 'cn=zimbra', filter => '(zimbraLDAPSchemaVersion=*)', attrs => [ 'zimbraLDAPSchemaVersion' ]);
         if ( $result->count > 0 ) {
             my $entry = $result->entry(0);
             if( $entry ){
-                $entry->replace( zimbraLDAPSchemaVersion => $last_updated_timestamp );
+                $entry->replace( zimbraLDAPSchemaVersion => $new_timestamp );
             }
             my $msg = $entry->update( $ldap );
             if ( $msg->code() ) {
                 print "Error msg: ", $entry->dn(), " ", $msg->error(), "\n";
             }
         }
-        print "LDAP schema upgraded to version $last_updated_timestamp \n";
+        print "LDAP schema upgraded to version $new_timestamp \n";
     }
 }
 
@@ -176,7 +176,7 @@ sub prepare_cleanup_file(){
             print "Executing cleanup from ", $timestamp_from_file, ".json\n";
                 my @attributes = @{$json_decoded->{"delete"}};
                 &apply_cleanup(\@attributes);
-                &update_zimbra_ldap_schema_version($last_applied_update_version);
+                &update_zimbra_ldap_schema_version($timestamp_from_file);
             1;
         } or do {
             my $e = $@;
@@ -213,7 +213,6 @@ sub apply_cleanup {
             $entry->update ( $ldap ); # applies delete
         }
     }
-    print STDOUT "...Done.\n";
 }
 $ldap->unbind;
 print "Cleanup completed.\n";
