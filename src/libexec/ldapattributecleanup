@@ -227,7 +227,7 @@ sub apply_cleanup {
             my $msg = $entry->delete($attribute);
             $msg = $entry->update ( $ldap ); # applies delete
             if ( $msg->code() ) {
-                print STDERR $msg->error(), "\n";
+                print STDERR "Error msg: ", $entry->dn(), " ", $msg->error(), "\n";
                 return 1;
             }
         }
