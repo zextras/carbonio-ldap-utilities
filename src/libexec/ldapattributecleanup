@@ -30,6 +30,8 @@ use JSON::PP;
 use File::Basename;
 use experimental 'smartmatch';
 
+print "Starting LDAP cleanup...\n";
+
 my $source_config_dir = "/opt/zextras/common/etc/openldap";
 my $ldap_attribute_cleanup_dir = "$source_config_dir/zimbra/cleanup/attrs";
 my $ldap_root_password = getLocalConfig("ldap_root_password");
@@ -159,7 +161,7 @@ sub update_zimbra_ldap_schema_version(){
     prepare_cleanup_file($filename<string>);
 Checks cleanup file timestamp again schema version and applies it if eligible.
 =cut
-sub process_cleanup_file(){
+sub prepare_cleanup_file(){
     my ($infile) = @_;
     my $infile_base_name = basename($infile);
     (my $timestamp_from_file = $infile_base_name) =~ s/\.[^.]+$//;
@@ -214,4 +216,5 @@ sub apply_cleanup {
     print STDOUT "...Done.\n";
 }
 $ldap->unbind;
+print "Cleanup completed.\n";
 exit(0);
