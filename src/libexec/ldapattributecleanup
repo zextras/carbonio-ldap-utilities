@@ -101,7 +101,7 @@ if (-d "$ldap_attribute_cleanup_dir") {
         next unless (-f "$ldap_attribute_cleanup_dir/$file");
         next unless ($file =~ m/json/);
         my $infile = "$ldap_attribute_cleanup_dir/$file";
-        failed = &prepare_cleanup_file($infile);
+        $failed = &prepare_cleanup_file($infile);
         if ($failed) {
             print STDERR "Cleanup ", $file, "failed.\n";
             # exit while loop
@@ -197,11 +197,11 @@ sub prepare_cleanup_file(){
             my $json_decoded = $json->decode($raw_json);
             print STDOUT "Executing cleanup from ", $timestamp_from_file, ".json\n";
                 my @attributes = @{$json_decoded->{"delete"}};
-                failed = &apply_cleanup(\@attributes);
+                $failed = &apply_cleanup(\@attributes);
                 if ($failed) {
                     print STDERR "Cleanup from ", $timestamp_from_file, ".json failed.\n";
                 } else {
-                    failed = &update_zimbra_ldap_schema_version($timestamp_from_file);
+                    $failed = &update_zimbra_ldap_schema_version($timestamp_from_file);
                     if ($failed) {
                         print STDERR "Could not update schema version to ", $timestamp_from_file, ".\n";
                     }
