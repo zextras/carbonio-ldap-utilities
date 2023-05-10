@@ -67,7 +67,6 @@ olcDbIndex: zimbraMailForwardingAddress eq
 olcDbIndex: zimbraMailCatchAllAddress eq,sub
 olcDbIndex: zimbraMailHost eq
 olcDbIndex: zimbraMemberOf eq
-olcDbIndex: zimbraShareInfo sub
 olcDbIndex: zimbraSharedItem eq,sub
 olcDbIndex: zimbraMailTransport eq
 olcDbIndex: zimbraMailAlias eq,sub
