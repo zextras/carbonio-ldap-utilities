@@ -115,6 +115,13 @@
     "zimbraServerVersionMinor",
     "zimbraServerVersionMicro",
     "zimbraServerVersionType",
-    "zimbraServerVersionBuild"
+    "zimbraServerVersionBuild",
+    "zimbraAdminConsoleDNSCheckEnabled",
+    "zimbraDNSCheckHostname",
+    "zimbraReverseProxyDnsLookupInServerEnabled",
+    "zimbraDNSMasterIP",
+    "zimbraDNSUseTCP",
+    "zimbraDNSUseUDP",
+    "zimbraDNSTCPUpstream"
   ]
 }
