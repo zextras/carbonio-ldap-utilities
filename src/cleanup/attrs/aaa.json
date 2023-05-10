@@ -122,6 +122,11 @@
     "zimbraDNSMasterIP",
     "zimbraDNSUseTCP",
     "zimbraDNSUseUDP",
-    "zimbraDNSTCPUpstream"
+    "zimbraDNSTCPUpstream",
+    "zimbraFeatureBriefcasesEnabled",
+    "zimbraFeatureBriefcaseSlidesEnabled",
+    "zimbraFeatureBriefcaseSpreadsheetEnabled",
+    "zimbraFeatureBriefcaseDocsEnabled",
+    "zimbraPrefBriefcaseReadingPaneLocation"
   ]
 }
