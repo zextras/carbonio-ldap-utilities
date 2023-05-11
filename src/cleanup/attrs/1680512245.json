@@ -128,5 +128,6 @@
     "zimbraFeatureBriefcaseSpreadsheetEnabled",
     "zimbraFeatureBriefcaseDocsEnabled",
     "zimbraPrefBriefcaseReadingPaneLocation"
-  ]
+  ],
+  "ldif": ["remove_zimbraShareInfo.ldif"]
 }
