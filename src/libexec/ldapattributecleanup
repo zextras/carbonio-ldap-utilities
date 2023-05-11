@@ -201,11 +201,6 @@ sub prepare_cleanup_file(){
                 $failed = &apply_cleanup(\@attributes);
                 if ($failed) {
                     print STDERR "Cleanup from ", $timestamp_from_file, ".json failed.\n";
-                } else {
-                    $failed = &update_zimbra_ldap_schema_version($timestamp_from_file);
-                    if ($failed) {
-                        print STDERR "Could not update schema version to ", $timestamp_from_file, ".\n";
-                    }
                 }
             }
             if (exists $json_decoded->{"ldif"}) {
@@ -213,11 +208,13 @@ sub prepare_cleanup_file(){
                 $failed = &apply_ldif_cleanup(\@ldifs);
                 if ($failed) {
                     print STDERR "Cleanup from ", $timestamp_from_file, ".json failed.\n";
-                } else {
-                    $failed = &update_zimbra_ldap_schema_version($timestamp_from_file);
-                    if ($failed) {
-                        print STDERR "Could not update schema version to ", $timestamp_from_file, ".\n";
-                    }
+                }
+            }
+            # update schema version if no failure
+            if (!$failed) {
+                $failed = &update_zimbra_ldap_schema_version($timestamp_from_file);
+                if ($failed) {
+                    print STDERR "Could not update schema version to ", $timestamp_from_file, ".\n";
                 }
             }
             1;
