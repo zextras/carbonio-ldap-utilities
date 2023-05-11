@@ -270,7 +270,7 @@ returns failed status (true or false)
 sub apply_ldif_cleanup {
     my ($ldifFiles) = @_;
     foreach my $ldifFile (@$ldifFiles) {
-        print STDOUT "Running LDIF file $ldifFile...\n";
+        print STDOUT "Running LDIF file $ldifFile...";
         my $ldif = Net::LDAP::LDIF->new("$ldap_attribute_cleanup_dir/$ldifFile", "r", onerror => 'warn');
         # Process the LDIF input file
         while(my $entry = $ldif->read())
