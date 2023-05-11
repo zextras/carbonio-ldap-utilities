@@ -203,7 +203,7 @@ sub prepare_cleanup_file(){
                     print STDERR "Cleanup from ", $timestamp_from_file, ".json failed.\n";
                 }
             }
-            if (exists $json_decoded->{"ldif"}) {
+            if (!$failed && exists $json_decoded->{"ldif"}) {
                 my @ldifs = @{$json_decoded->{"ldif"}};
                 $failed = &apply_ldif_cleanup(\@ldifs);
                 if ($failed) {
