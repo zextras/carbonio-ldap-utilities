@@ -10,9 +10,7 @@ SPDX-License-Identifier: AGPL-3.0-only
     <info organisation="zextras" module="zm-ldap-utilities" status="integration"></info>
     <dependencies>
         <dependency org="zextras" name="zm-common" rev="latest.integration" />
-        <dependency org="zextras" name="zm-soap" rev="latest.integration" />
         <dependency org="zextras" name="zm-client" rev="latest.integration" />
-        <dependency org="zextras" name="zm-native" rev="latest.integration" />
         <dependency org="zextras" name="zm-store"  rev="latest.integration" >
           <artifact name="zm-store" maven:classifier="classes" type="jar" ext="jar"/>
         </dependency>
