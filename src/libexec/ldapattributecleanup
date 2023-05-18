@@ -196,16 +196,27 @@ sub prepare_cleanup_file(){
         eval {
             my $json_decoded = $json->decode($raw_json);
             print STDOUT "Executing cleanup from ", $timestamp_from_file, ".json\n";
+            if (exists $json_decoded->{"delete"}) {
                 my @attributes = @{$json_decoded->{"delete"}};
                 $failed = &apply_cleanup(\@attributes);
                 if ($failed) {
                     print STDERR "Cleanup from ", $timestamp_from_file, ".json failed.\n";
-                } else {
-                    $failed = &update_zimbra_ldap_schema_version($timestamp_from_file);
-                    if ($failed) {
-                        print STDERR "Could not update schema version to ", $timestamp_from_file, ".\n";
-                    }
                 }
+            }
+            if (!$failed && exists $json_decoded->{"ldif"}) {
+                my @ldifs = @{$json_decoded->{"ldif"}};
+                $failed = &apply_ldif_cleanup(\@ldifs);
+                if ($failed) {
+                    print STDERR "Cleanup from ", $timestamp_from_file, ".json failed.\n";
+                }
+            }
+            # update schema version if no failure
+            if (!$failed) {
+                $failed = &update_zimbra_ldap_schema_version($timestamp_from_file);
+                if ($failed) {
+                    print STDERR "Could not update schema version to ", $timestamp_from_file, ".\n";
+                }
+            }
             1;
         } or do {
             my $e = $@;
@@ -243,6 +254,30 @@ sub apply_cleanup {
                 print STDERR "Error msg: ", $entry->dn(), " ", $msg->error(), "\n";
                 return 1;
             }
+        }
+    }
+    return 0;
+}
+
+=begin apply_ldif_cleanup
+    apply_ldif_cleanup(@attributes<array>);
+Removes provided attributes from all entries in LDAP.
+returns failed status (true or false)
+=cut
+sub apply_ldif_cleanup {
+    my ($ldifFiles) = @_;
+    foreach my $ldifFile (@$ldifFiles) {
+        print STDOUT "Running LDIF file $ldifFile...";
+        my $ldif = Net::LDAP::LDIF->new("$ldap_attribute_cleanup_dir/$ldifFile", "r", onerror => 'warn');
+        # Process the LDIF input file
+        while(my $entry = $ldif->read())
+        {
+            my $msg = $entry->update ( $ldap ); # applies
+            if ( $msg->code() ) {
+                print STDERR "Error msg: ", $entry->dn(), " ", $msg->error(), "\n";
+                return 1;
+            }
+            print STDOUT "success.\n";
         }
     }
     return 0;

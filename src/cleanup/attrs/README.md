@@ -25,7 +25,13 @@ Cleanup files are named as the value of last timestamp of  last commit on `attrs
 The [`ldapattributecleanup`](../libexec/ldapattributecleanup) script runs in postinstall part of the installation procedure in upgrade hook.
 It runs as first step and starts LDAP.
 It then checks current LDAP schema version, iterates all .json files in cleanup folder, sorted by timestamp, \
-starting from current schema timestamp value, and removes each defined attribute \
-from ALL entries in LDAP. Due to this generic approach the cleanup could take a bit if there are many entries in LDAP.
+starting from current schema timestamp value.
+It can work in two different ways and in this order of execution:
+1) removes all attributes from all entries defined in "delete" array, if present, by order. \
+Due to this generic approach the cleanup could take a bit if there are many entries in LDAP.
+2) executes .ldif files defined in "ldif" array, if present, by order:
+this is to add flexibility in cleanup when complex operations are performed.
+The .ldif file must be located on the same directory as .json file.
+
 The schema version is updated after each applied .json cleanup.
 

@@ -3,5 +3,6 @@
     "carbonioAdminPort",
     "carbonioAdminPortTwo",
     "carbonioAdminPortThree"
-  ]
+  ],
+  "ldif": ["remove_value.ldif"]
 }
