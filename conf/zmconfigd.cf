@@ -341,20 +341,6 @@ SECTION service
 	REWRITE mailboxd/etc/service.web.xml.in mailboxd/webapps/service/WEB-INF/web.xml
 	RESTART mailboxd
 
-SECTION zimbra
-	REWRITE mailboxd/etc/zimbra.web.xml.in mailboxd/webapps/zimbra/WEB-INF/web.xml
-	REWRITE mailboxd/etc/jetty-env.xml.in mailboxd/webapps/zimbra/WEB-INF/jetty-env.xml
-	RESTART mailboxd
-
-SECTION zimbraAdmin
-	REWRITE mailboxd/etc/zimbraAdmin.web.xml.in mailboxd/webapps/zimbraAdmin/WEB-INF/web.xml
-	REWRITE mailboxd/etc/zimbraAdmin-jetty-env.xml.in mailboxd/webapps/zimbraAdmin/WEB-INF/jetty-env.xml
-	RESTART mailboxd
-
-SECTION zimlet
-	REWRITE mailboxd/etc/zimlet.web.xml.in mailboxd/webapps/zimlet/WEB-INF/web.xml
-	RESTART mailboxd
-
 SECTION proxy
 	LOCAL ldap_url
 	MAPLOCAL zimbraSSLDHParam
@@ -368,7 +354,6 @@ SECTION proxy
 	VAR zimbraMailSSLProxyPort
 	VAR zimbraPop3ProxyBindPort
 	VAR zimbraPop3SSLProxyBindPort
-	VAR zimbraServerVersion
 	VAR zimbraReverseProxyAdminEnabled
 	VAR zimbraReverseProxyAuthWaitInterval
 	VAR zimbraReverseProxyCacheEntryTTL
