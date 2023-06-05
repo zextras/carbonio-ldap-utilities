@@ -129,6 +129,5 @@
     "zimbraFeatureBriefcaseDocsEnabled",
     "zimbraPrefBriefcaseReadingPaneLocation"
   ],
-  "ldif": ["remove_zimbraShareInfo.ldif"],
   "perl": ["remove_zimbraShareInfo.pl"]
 }
