@@ -10,19 +10,6 @@ use lib '/opt/zextras/common/lib/perl5';
 use Net::LDAP;
 use XML::Simple;
 
-if ( ! -d "/opt/zextras/common/etc/openldap/schema" ) {
-    print STDERR "ERROR: openldap does not appear to be installed - exiting\n";
-    exit(1);
-}
-
-my $id = getpwuid($<);
-chomp $id;
-if ($id ne "zextras") {
-    print STDERR "Error: must be run as zextras user\n";
-    exit (1);
-}
-
-
 my $localxml = XMLin("/opt/zextras/conf/localconfig.xml");
 my $ldap_root_password = $localxml->{key}->{ldap_root_password}->{value};
 chomp($ldap_root_password);
@@ -60,6 +47,5 @@ foreach $entry (@entries)  {
     );
     $mesg->code && print STDERR "Failed to remove zimbraShareInfo on entry with dn: $dn \n", $mesg->error ;
 }
-print STDOUT "Done.\n";
 
 $ldap->unbind;

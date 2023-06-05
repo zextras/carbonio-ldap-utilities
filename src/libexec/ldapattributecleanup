@@ -274,6 +274,7 @@ returns failed status (true or false)
 sub apply_ldif_cleanup {
     my ($ldifFiles) = @_;
     foreach my $ldifFile (@$ldifFiles) {
+        &print_separater("-", "80");
         print STDOUT "Running LDIF file $ldifFile...";
         my $ldif = Net::LDAP::LDIF->new("$ldap_attribute_cleanup_dir/$ldifFile", "r", onerror => 'warn');
         # Process the LDIF input file
@@ -282,9 +283,11 @@ sub apply_ldif_cleanup {
             my $msg = $entry->update ( $ldap ); # applies
             if ( $msg->code() ) {
                 print STDERR "Error msg: ", $entry->dn(), " ", $msg->error(), "\n";
+                &print_separater("-", "80");
                 return 1;
             }
             print STDOUT "success.\n";
+            &print_separater("-", "80");
         }
     }
     return 0;
@@ -298,8 +301,17 @@ returns failed status (true or false)
 sub apply_perl_cleanup {
     my ($perlFiles) = @_;
     foreach my $perlFile (@$perlFiles) {
+        &print_separater("-", "80");
         print STDOUT "Running perl script $perlFile...";
-        system("$ldap_attribute_cleanup_dir/$perlFile");
+        print `perl $ldap_attribute_cleanup_dir/$perlFile`;
+        my $failed=@?;
+        if ($failed) {
+            print STDERR "failed.\n";
+            &print_separater("-", "80");
+            return 1;
+        }
+        print STDOUT "success.\n";
+        &print_separater("-", "80");
     }
     return 0;
 }
