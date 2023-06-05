@@ -210,6 +210,13 @@ sub prepare_cleanup_file(){
                     print STDERR "Cleanup from ", $timestamp_from_file, ".json failed.\n";
                 }
             }
+            if (!$failed && exists $json_decoded->{"perl"}) {
+                my @perls = @{$json_decoded->{"perl"}};
+                $failed = &apply_perl_cleanup(\@perls);
+                if ($failed) {
+                    print STDERR "Cleanup from ", $timestamp_from_file, ".json failed.\n";
+                }
+            }
             # update schema version if no failure
             if (!$failed) {
                 $failed = &update_zimbra_ldap_schema_version($timestamp_from_file);
@@ -279,6 +286,20 @@ sub apply_ldif_cleanup {
             }
             print STDOUT "success.\n";
         }
+    }
+    return 0;
+}
+
+=begin apply_perl_cleanup
+    apply_perl_cleanup(@attributes<array>);
+Runs scripts for this migrations
+returns failed status (true or false)
+=cut
+sub apply_perl_cleanup {
+    my ($perlFiles) = @_;
+    foreach my $perlFile (@$perlFiles) {
+        print STDOUT "Running perl script $perlFile...";
+        system("$ldap_attribute_cleanup_dir/$perlFile");
     }
     return 0;
 }
