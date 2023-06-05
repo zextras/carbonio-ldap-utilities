@@ -302,7 +302,7 @@ sub apply_perl_cleanup {
     my ($perlFiles) = @_;
     foreach my $perlFile (@$perlFiles) {
         &print_separater("-", "80");
-        print STDOUT "Running perl script $perlFile...";
+        print STDOUT "Running perl script $perlFile...\n";
         print `perl $ldap_attribute_cleanup_dir/$perlFile`;
         my $failed=@?;
         if ($failed) {
