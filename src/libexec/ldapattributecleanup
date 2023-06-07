@@ -30,9 +30,6 @@ use JSON::PP;
 use File::Basename;
 use experimental 'smartmatch';
 
-&print_separater("-", "80");
-print "Starting LDAP cleanup...\n";
-
 my $source_config_dir = "/opt/zextras/common/etc/openldap";
 my $ldap_attribute_cleanup_dir = "$source_config_dir/zimbra/cleanup/attrs";
 my $ldap_root_password = getLocalConfig("ldap_root_password");
@@ -42,9 +39,11 @@ my $ldap_starttls_supported = getLocalConfig("ldap_starttls_supported");
 my $zimbra_tmp_directory = getLocalConfig("zimbra_tmp_directory");
 
 if (lc($ldap_is_master) ne "true") {
-    print STDERR "Must run on master ldap.\n";
-    exit(1);
+    exit(0);
 }
+
+&print_separater("-", "80");
+print "Starting LDAP cleanup...\n";
 
 if (!-d $zimbra_tmp_directory) {
     File::Path::mkpath("$zimbra_tmp_directory");
