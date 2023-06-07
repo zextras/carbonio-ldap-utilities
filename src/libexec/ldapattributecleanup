@@ -203,20 +203,6 @@ sub prepare_cleanup_file(){
                     print STDERR "Cleanup from ", $timestamp_from_file, ".json failed.\n";
                 }
             }
-            if (!$failed && exists $json_decoded->{"ldif"}) {
-                my @ldifs = @{$json_decoded->{"ldif"}};
-                $failed = &apply_ldif_cleanup(\@ldifs);
-                if ($failed) {
-                    print STDERR "Cleanup from ", $timestamp_from_file, ".json failed.\n";
-                }
-            }
-            if (!$failed && exists $json_decoded->{"perl"}) {
-                my @perls = @{$json_decoded->{"perl"}};
-                $failed = &apply_perl_cleanup(\@perls);
-                if ($failed) {
-                    print STDERR "Cleanup from ", $timestamp_from_file, ".json failed.\n";
-                }
-            }
             # update schema version if no failure
             if (!$failed) {
                 $failed = &update_zimbra_ldap_schema_version($timestamp_from_file);
@@ -266,52 +252,3 @@ sub apply_cleanup {
     return 0;
 }
 
-=begin apply_ldif_cleanup
-    apply_ldif_cleanup(@attributes<array>);
-Removes provided attributes from all entries in LDAP.
-returns failed status (true or false)
-=cut
-sub apply_ldif_cleanup {
-    my ($ldifFiles) = @_;
-    foreach my $ldifFile (@$ldifFiles) {
-        &print_separater("-", "80");
-        print STDOUT "Running LDIF file $ldifFile...";
-        my $ldif = Net::LDAP::LDIF->new("$ldap_attribute_cleanup_dir/$ldifFile", "r", onerror => 'warn');
-        # Process the LDIF input file
-        while(my $entry = $ldif->read())
-        {
-            my $msg = $entry->update ( $ldap ); # applies
-            if ( $msg->code() ) {
-                print STDERR "Error msg: ", $entry->dn(), " ", $msg->error(), "\n";
-                &print_separater("-", "80");
-                return 1;
-            }
-            print STDOUT "success.\n";
-            &print_separater("-", "80");
-        }
-    }
-    return 0;
-}
-
-=begin apply_perl_cleanup
-    apply_perl_cleanup(@attributes<array>);
-Runs scripts for this migrations
-returns failed status (true or false)
-=cut
-sub apply_perl_cleanup {
-    my ($perlFiles) = @_;
-    foreach my $perlFile (@$perlFiles) {
-        &print_separater("-", "80");
-        print STDOUT "Running perl script $perlFile...\n";
-        print `perl $ldap_attribute_cleanup_dir/$perlFile`;
-        my $failed=@?;
-        if ($failed) {
-            print STDERR "failed.\n";
-            &print_separater("-", "80");
-            return 1;
-        }
-        print STDOUT "success.\n";
-        &print_separater("-", "80");
-    }
-    return 0;
-}

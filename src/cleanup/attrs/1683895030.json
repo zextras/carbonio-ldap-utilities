@@ -129,6 +129,5 @@
     "zimbraFeatureBriefcaseDocsEnabled",
     "zimbraPrefBriefcaseReadingPaneLocation",
     "zimbraPrefFileSharingApplication"
-  ],
-  "perl": ["remove_zimbraShareInfo.pl"]
+  ]
 }
