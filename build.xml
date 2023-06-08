@@ -273,9 +273,6 @@
     <copy todir="${build.dir}/ldap-config/updates/">
       <fileset dir="src/updates/" includes="**" />
     </copy>
-    <copy todir="${build.dir}/ldap-config/cleanup/">
-      <fileset dir="src/cleanup/" includes="**" />
-    </copy>
 
     <!--schema -->
 
