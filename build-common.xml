@@ -180,7 +180,7 @@
 
 
   <target name="carbonio-version">
-    <fail message="Missing build version. use ant proper ZCS version like -Dcarbonio.buildinfo.version=23.6.0_ZEXTRAS_202306">
+    <fail message="Missing build version. use ant proper ZCS version like -Dcarbonio.buildinfo.version=23.7.0_ZEXTRAS_202307">
       <condition>
         <not>
           <isset property="carbonio.buildinfo.version"/>
