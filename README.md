@@ -9,6 +9,10 @@
 
 Carbonio LDAP utilities to manage OpenLDAP.
 
+Contains:
+- tools to manage LDAP operations [src/libexec](src/libexec)
+- zmconfigd configuration [conf](conf)
+
 ## License
 
 See [COPYING](COPYING) file for details
