@@ -47,6 +47,7 @@ SECTION antivirus DEPENDS amavis
 	VAR zimbraClamAVBindAddress
 	VAR zimbraClamAVDatabaseMirror
 	VAR carbonioClamAVDatabaseCustomURL
+	VAR carbonioClamAVReadTimeout
 	RESTART antivirus mta
 
 SECTION antispam DEPENDS amavis
